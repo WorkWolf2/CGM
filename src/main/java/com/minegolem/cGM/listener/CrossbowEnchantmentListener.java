@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,20 +55,32 @@ public class CrossbowEnchantmentListener implements Listener {
             return;
         }
 
-        if (!canHit(player, hitLocation)) {
-            arrow.remove();
+        boolean isPlayerHit = event.getHitEntity() instanceof Player;
+        boolean isMobHit = event.getHitEntity() != null && event.getHitEntity() instanceof LivingEntity && !(event.getHitEntity() instanceof Player);
+        boolean isBlockOrVoidHit = event.getHitBlock() != null;
+
+        if (isPlayerHit) {
             event.setCancelled(true);
+            arrow.remove();
+            player.sendMessage("§cNon puoi colpire altri giocatori qui!");
             return;
         }
 
-        ItemStack crossbow = getCrossbowInHands(player);
-        if (crossbow == null || crossbow.getItemMeta() == null) return;
+        if (isMobHit) {
+            applyFlameIfNeeded(player, event);
+            return;
+        }
 
-        ItemMeta meta = crossbow.getItemMeta();
-        if (!meta.hasEnchant(Enchantment.FLAME)) return;
+        boolean canShootInArea = canHit(player, hitLocation);
 
-        if (event.getHitEntity() != null) {
-            event.getHitEntity().setFireTicks(100);
+        if (isBlockOrVoidHit) {
+            if (!canShootInArea) {
+                event.setCancelled(true);
+                arrow.remove();
+                player.sendMessage("§cNon puoi lanciare frecce in questa zona!");
+                return;
+            }
+            return;
         }
     }
 
@@ -81,5 +94,15 @@ public class CrossbowEnchantmentListener implements Listener {
         return null;
     }
 
-    // TODO: IMPLEMENTARE WORLDGUARD
+    private void applyFlameIfNeeded(Player player, ProjectileHitEvent event) {
+        ItemStack crossbow = getCrossbowInHands(player);
+        if (crossbow == null || crossbow.getItemMeta() == null) return;
+
+        ItemMeta meta = crossbow.getItemMeta();
+        if (!meta.hasEnchant(Enchantment.FLAME)) return;
+
+        if (event.getHitEntity() != null) {
+            event.getHitEntity().setFireTicks(100);
+        }
+    }
 }
