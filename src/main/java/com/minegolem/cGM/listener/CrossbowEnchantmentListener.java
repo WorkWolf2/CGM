@@ -1,0 +1,85 @@
+package com.minegolem.cGM.listener;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import static com.minegolem.cGM.utilities.WorldGuardUtils.canHit;
+
+public class CrossbowEnchantmentListener implements Listener {
+    @EventHandler
+    public void onCrossbowShoot(EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        ItemStack bow = event.getBow();
+        if (bow == null || bow.getType() != Material.CROSSBOW) return;
+
+        ItemMeta meta = bow.getItemMeta();
+        if (meta == null) return;
+
+        if (meta.hasEnchant(Enchantment.FLAME) && event.getProjectile() instanceof Arrow arrow) {
+            arrow.setFireTicks(Integer.MAX_VALUE);
+        }
+
+        if (meta.hasEnchant(Enchantment.POWER) && event.getProjectile() instanceof AbstractArrow arrow) {
+            int level = meta.getEnchantLevel(Enchantment.POWER);
+            arrow.setDamage(arrow.getDamage() + (level * 0.5) + 0.5);
+        }
+
+        if (meta.hasEnchant(Enchantment.INFINITY)) {
+            event.setConsumeItem(false);
+        }
+    }
+
+    @EventHandler
+    public void onArrowHit(ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
+
+        Location hitLocation;
+        if (event.getHitEntity() != null) {
+            hitLocation = event.getHitEntity().getLocation();
+        } else if (event.getHitBlock() != null) {
+            hitLocation = event.getHitBlock().getLocation();
+        } else {
+            return;
+        }
+
+        if (!canHit(player, hitLocation)) {
+            arrow.remove();
+            event.setCancelled(true);
+            return;
+        }
+
+        ItemStack crossbow = getCrossbowInHands(player);
+        if (crossbow == null || crossbow.getItemMeta() == null) return;
+
+        ItemMeta meta = crossbow.getItemMeta();
+        if (!meta.hasEnchant(Enchantment.FLAME)) return;
+
+        if (event.getHitEntity() != null) {
+            event.getHitEntity().setFireTicks(100);
+        }
+    }
+
+    private ItemStack getCrossbowInHands(Player player) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.CROSSBOW) return mainHand;
+
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand.getType() == Material.CROSSBOW) return offHand;
+
+        return null;
+    }
+
+    // TODO: IMPLEMENTARE WORLDGUARD
+}

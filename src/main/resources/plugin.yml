@@ -1,0 +1,5 @@
+name: CGM
+version: '1.0.0'
+main: com.minegolem.cGM.CGM
+api-version: '1.21'
+authors: [ WorkWolf_2 ]
