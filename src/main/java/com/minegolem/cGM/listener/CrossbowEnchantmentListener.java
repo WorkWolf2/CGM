@@ -3,10 +3,7 @@ package com.minegolem.cGM.listener;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -56,7 +53,7 @@ public class CrossbowEnchantmentListener implements Listener {
         }
 
         boolean isPlayerHit = event.getHitEntity() instanceof Player;
-        boolean isMobHit = event.getHitEntity() != null && event.getHitEntity() instanceof LivingEntity && !(event.getHitEntity() instanceof Player);
+        boolean isMobHit = event.getHitEntity() instanceof LivingEntity && !(event.getHitEntity() instanceof Player);
         boolean isBlockOrVoidHit = event.getHitBlock() != null;
 
         if (isPlayerHit) {
@@ -67,7 +64,13 @@ public class CrossbowEnchantmentListener implements Listener {
         }
 
         if (isMobHit) {
-            applyFlameIfNeeded(player, event);
+            if (event.getHitEntity() instanceof Monster) {
+                applyFlameIfNeeded(player, event);
+            } else {
+                event.setCancelled(true);
+                arrow.remove();
+                player.sendMessage("§cPuoi colpire solo i mob ostili!");
+            }
             return;
         }
 
@@ -80,7 +83,6 @@ public class CrossbowEnchantmentListener implements Listener {
                 player.sendMessage("§cNon puoi lanciare frecce in questa zona!");
                 return;
             }
-            return;
         }
     }
 
