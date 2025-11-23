@@ -64,7 +64,7 @@ public class CrossbowEnchantmentListener implements Listener {
         }
 
         if (isMobHit) {
-            if (event.getHitEntity() instanceof Monster) {
+            if (event.getHitEntity() instanceof Monster || event.getHitEntity() instanceof Phantom) {
                 applyFlameIfNeeded(player, event);
             } else {
                 event.setCancelled(true);
