@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import static com.minegolem.cGM.utilities.WorldGuardUtils.canHit;
+import static com.minegolem.cGM.utilities.WorldGuardUtils.isInOwnClaim;
 
 public class CrossbowEnchantmentListener implements Listener {
     @EventHandler
@@ -48,41 +49,38 @@ public class CrossbowEnchantmentListener implements Listener {
             hitLocation = event.getHitEntity().getLocation();
         } else if (event.getHitBlock() != null) {
             hitLocation = event.getHitBlock().getLocation();
-        } else {
-            return;
-        }
+        } else return;
 
-        boolean isPlayerHit = event.getHitEntity() instanceof Player;
-        boolean isMobHit = event.getHitEntity() instanceof LivingEntity && !(event.getHitEntity() instanceof Player);
-        boolean isBlockOrVoidHit = event.getHitBlock() != null;
+        boolean isInsideOwnClaim = isInOwnClaim(player, player.getLocation());
+        boolean isGlobal = canHit(player, hitLocation);
 
-        if (isPlayerHit) {
-            event.setCancelled(true);
-            arrow.remove();
-            player.sendMessage("§cNon puoi colpire altri giocatori qui!");
-            return;
-        }
-
-        if (isMobHit) {
-            if (event.getHitEntity() instanceof Monster || event.getHitEntity() instanceof Phantom) {
-                applyFlameIfNeeded(player, event);
-            } else {
-                event.setCancelled(true);
+        if (event.getHitEntity() instanceof Player) {
+            if (!isGlobal) {
                 arrow.remove();
-                player.sendMessage("§cPuoi colpire solo i mob ostili!");
+                event.setCancelled(true);
+                player.sendMessage("§cNon puoi colpire altri giocatori nelle zone protette!");
             }
             return;
         }
 
-        boolean canShootInArea = canHit(player, hitLocation);
+        if (event.getHitEntity() instanceof LivingEntity entity) {
+            boolean isHostile = (entity instanceof Monster || entity instanceof Phantom || entity instanceof Shulker);
 
-        if (isBlockOrVoidHit) {
-            if (!canShootInArea) {
-                event.setCancelled(true);
+            if (!isHostile && !isInsideOwnClaim) {
                 arrow.remove();
-                player.sendMessage("§cNon puoi lanciare frecce in questa zona!");
+                event.setCancelled(true);
+                player.sendMessage("§cPuoi colpire solo i mob ostili in claim altrui!");
                 return;
             }
+
+            applyFlameIfNeeded(player, event);
+            return;
+        }
+
+        if (!isGlobal) {
+            arrow.remove();
+            event.setCancelled(true);
+            player.sendMessage("§cNon puoi lanciare frecce in questa zona!");
         }
     }
 

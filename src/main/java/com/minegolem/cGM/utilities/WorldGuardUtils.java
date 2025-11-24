@@ -58,4 +58,24 @@ public class WorldGuardUtils {
             return true;
         }
     }
+
+    public static boolean isInOwnClaim(Player player, Location location) {
+        try {
+            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
+            com.sk89q.worldedit.util.Location wgLocation = BukkitAdapter.adapt(location);
+
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regionManager = container.get(localPlayer.getWorld());
+            if (regionManager == null) return false;
+
+            ApplicableRegionSet regions = regionManager.getApplicableRegions(wgLocation.toVector().toBlockPoint());
+            for (ProtectedRegion region : regions) {
+                if (region.getId().equalsIgnoreCase("__global__")) continue;
+                if (region.isMember(localPlayer) || region.isOwner(localPlayer)) {
+                    return true;
+                }
+            }
+        } catch (Exception ignored) {}
+        return false;
+    }
 }
