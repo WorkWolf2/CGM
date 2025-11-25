@@ -45,7 +45,6 @@ public class WorldGuardUtils {
                 if (region.getId().equalsIgnoreCase("__global__")) continue;
 
                 if (!(region.isMember(localPlayer) || region.isOwner(localPlayer))) {
-                    player.sendMessage("§cNon puoi lanciare una freccia in questa zona protetta!");
                     return false;
                 }
             }
