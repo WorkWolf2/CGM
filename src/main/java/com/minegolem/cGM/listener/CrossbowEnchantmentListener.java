@@ -51,7 +51,7 @@ public class CrossbowEnchantmentListener implements Listener {
             hitLocation = event.getHitBlock().getLocation();
         } else return;
 
-        boolean isInsideOwnClaim = isInOwnClaim(player, player.getLocation());
+        boolean isInsideOwnClaim = isInOwnClaim(player, hitLocation);
         boolean isGlobal = canHit(player, hitLocation);
 
         if (event.getHitEntity() instanceof Player) {
@@ -66,7 +66,7 @@ public class CrossbowEnchantmentListener implements Listener {
         if (event.getHitEntity() instanceof LivingEntity entity) {
             boolean isHostile = (entity instanceof Monster || entity instanceof Phantom || entity instanceof Shulker);
 
-            if (!isHostile && !isInsideOwnClaim) {
+            if (!isHostile && !isGlobal) {
                 arrow.remove();
                 event.setCancelled(true);
                 player.sendMessage("§cPuoi colpire solo i mob ostili in claim altrui!");
