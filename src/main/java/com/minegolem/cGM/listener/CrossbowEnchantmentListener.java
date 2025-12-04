@@ -1,5 +1,6 @@
 package com.minegolem.cGM.listener;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -10,11 +11,19 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.minegolem.cGM.utilities.WorldGuardUtils.canHit;
 import static com.minegolem.cGM.utilities.WorldGuardUtils.isInOwnClaim;
 
 public class CrossbowEnchantmentListener implements Listener {
+
+    HashMap<Player, Map<ItemStack, Boolean>> arrowMap = new HashMap<>();
+
     @EventHandler
     public void onCrossbowShoot(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
@@ -25,17 +34,28 @@ public class CrossbowEnchantmentListener implements Listener {
         ItemMeta meta = bow.getItemMeta();
         if (meta == null) return;
 
+        boolean hasFlame = meta.hasEnchant(Enchantment.FLAME);
+
         if (meta.hasEnchant(Enchantment.FLAME) && event.getProjectile() instanceof Arrow arrow) {
             arrow.setFireTicks(Integer.MAX_VALUE);
         }
 
+        double finalPowerLevel = 1;
         if (meta.hasEnchant(Enchantment.POWER) && event.getProjectile() instanceof AbstractArrow arrow) {
             int level = meta.getEnchantLevel(Enchantment.POWER);
-            arrow.setDamage(arrow.getDamage() + (level * 0.5) + 0.5);
+            double powerLevel = arrow.getDamage() + (level * 0.5) + 0.5;
+
+            finalPowerLevel = level;
+            arrow.setDamage(powerLevel);
         }
 
-        if (meta.hasEnchant(Enchantment.INFINITY)) {
-            event.setConsumeItem(false);
+        boolean hasInfinity = meta.hasEnchant(Enchantment.INFINITY);
+        boolean hasMultishot = meta.hasEnchant(Enchantment.MULTISHOT);
+
+        if (hasInfinity) {
+            meta.removeEnchant(Enchantment.INFINITY);
+
+            bow.setItemMeta(meta);
         }
     }
 
@@ -51,8 +71,9 @@ public class CrossbowEnchantmentListener implements Listener {
             hitLocation = event.getHitBlock().getLocation();
         } else return;
 
-        boolean isInsideOwnClaim = isInOwnClaim(player, hitLocation);
         boolean isGlobal = canHit(player, hitLocation);
+
+        ItemStack item = player.getInventory().getItemInMainHand();
 
         if (event.getHitEntity() instanceof Player) {
             if (!isGlobal) {

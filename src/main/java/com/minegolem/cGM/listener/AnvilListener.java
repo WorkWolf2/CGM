@@ -96,7 +96,6 @@ public class AnvilListener implements Listener {
                 enchantment == Enchantment.POWER ||
                 enchantment == Enchantment.PUNCH ||
                 enchantment == Enchantment.FLAME ||
-                enchantment == Enchantment.INFINITY ||
                 enchantment == Enchantment.UNBREAKING ||
                 enchantment == Enchantment.MENDING;
     }

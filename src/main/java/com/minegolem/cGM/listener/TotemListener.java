@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,6 +31,8 @@ public class TotemListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
+
+        if (event.isCancelled()) return;
 
         if (invulnerablePlayers.contains(player.getUniqueId())) {
             event.setCancelled(true);
@@ -101,7 +104,11 @@ public class TotemListener implements Listener {
     }
 
     private ItemStack findTotemInInventory(Player player) {
-        for (ItemStack item : player.getInventory().getContents()) {
+        PlayerInventory inv = player.getInventory();
+
+        for (int slot = 0; slot < 9; slot++) { // Solo hotbar
+            ItemStack item = inv.getItem(slot);
+
             if (item != null
                     && item.getType() == Material.TOTEM_OF_UNDYING
                     && item.getAmount() > 0) {
