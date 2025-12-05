@@ -65,7 +65,7 @@ public class TurtleHelmetListener implements Listener {
             }
         } else {
             player.removePotionEffect(PotionEffectType.DOLPHINS_GRACE);
-            player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+           // player.removePotionEffect(PotionEffectType.WATER_BREATHING);
         }
     }
 }

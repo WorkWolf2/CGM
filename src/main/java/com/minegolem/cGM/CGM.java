@@ -3,6 +3,7 @@ package com.minegolem.cGM;
 import com.minegolem.cGM.food.FoodEffectListener;
 import com.minegolem.cGM.food.effects.*;
 import com.minegolem.cGM.listener.*;
+import com.minegolem.cGM.listener.logger.EffectLogger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CGM extends JavaPlugin {
@@ -39,6 +40,7 @@ public final class CGM extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InfinityArrowListener(this), this);
         getServer().getPluginManager().registerEvents(new SpawnerSilkTouchListener(), this);
         getServer().getPluginManager().registerEvents(new PotionStackListener(this), this);
+       // getServer().getPluginManager().registerEvents(new EffectLogger(this), this);
 
     }
 
