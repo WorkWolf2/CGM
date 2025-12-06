@@ -39,7 +39,7 @@ public final class CGM extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CrossbowEnchantmentListener(), this);
         getServer().getPluginManager().registerEvents(new InfinityArrowListener(this), this);
         getServer().getPluginManager().registerEvents(new SpawnerSilkTouchListener(), this);
-        getServer().getPluginManager().registerEvents(new PotionStackListener(this), this);
+       // getServer().getPluginManager().registerEvents(new PotionStackListener(this), this);
        // getServer().getPluginManager().registerEvents(new EffectLogger(this), this);
 
     }
