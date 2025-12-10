@@ -2,8 +2,10 @@ package com.minegolem.cGM.food.effects;
 
 import com.minegolem.cGM.CGM;
 import com.minegolem.cGM.food.FoodEffect;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 

@@ -79,7 +79,7 @@ public class CrossbowEnchantmentListener implements Listener {
             if (!isGlobal) {
                 arrow.remove();
                 event.setCancelled(true);
-                player.sendMessage("§cNon puoi colpire altri giocatori nelle zone protette!");
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c✘ &fAzione bloccata &8| &7Zona protetta."));
             }
             return;
         }
@@ -90,7 +90,7 @@ public class CrossbowEnchantmentListener implements Listener {
             if (!isHostile && !isGlobal) {
                 arrow.remove();
                 event.setCancelled(true);
-                player.sendMessage("§cPuoi colpire solo i mob ostili in claim altrui!");
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c✘ &fAzione bloccata &8| &7Zona protetta."));
                 return;
             }
 
@@ -101,7 +101,7 @@ public class CrossbowEnchantmentListener implements Listener {
         if (!isGlobal) {
             arrow.remove();
             event.setCancelled(true);
-            player.sendMessage("§cNon puoi lanciare frecce in questa zona!");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c✘ &fAzione bloccata &8| &7Zona protetta."));
         }
     }
 
