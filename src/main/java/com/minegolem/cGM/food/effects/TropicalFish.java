@@ -16,7 +16,7 @@ public class TropicalFish implements FoodEffect {
 
     @Override
     public void applyEffect(Player player, CGM plugin) {
-        PotionEffect effect = new PotionEffect(PotionEffectType.CONDUIT_POWER, 6000, 0, false, false, false);
+        PotionEffect effect = new PotionEffect(PotionEffectType.WATER_BREATHING, 6000, 0, false, false, false);
         player.addPotionEffect(effect);
     }
 }
